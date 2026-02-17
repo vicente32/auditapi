@@ -11,6 +11,8 @@ import { createConfigLoader } from '../config/loader';
 import { Auditor } from '../core/auditor';
 import { AuditResult, Violation } from '../types/config';
 
+const defaultConfigPath = path.resolve(__dirname, '../../config');
+
 const program = new Command();
 
 // Grade order for comparison (higher is better)
@@ -134,7 +136,7 @@ program
   .command('audit')
   .description('Audit an OpenAPI specification file')
   .argument('<file>', 'Path to the OpenAPI file (YAML or JSON)')
-  .option('-c, --config <path>', 'Path to config directory', './config')
+  .option('-c, --config <path>', 'Path to config directory', defaultConfigPath)
   .option('-j, --json', 'Output results as JSON')
   .option('-o, --output <file>', 'Write output to file')
   .option('-v, --verbose', 'Show all violations including warnings and info', false)
@@ -213,7 +215,7 @@ program
 program
   .command('validate-config')
   .description('Validate configuration files')
-  .option('-c, --config <path>', 'Path to config directory', './config')
+  .option('-c, --config <path>', 'Path to config directory', defaultConfigPath)
   .action((options) => {
     try {
       const configPath = path.resolve(options.config);
