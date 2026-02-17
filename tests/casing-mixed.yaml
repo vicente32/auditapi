@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: API con Casing Mixto
+  description: API de prueba para detectar mezcla de camelCase y snake_case
+  version: 1.0.0
+  contact:
+    email: test@example.com
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+
+paths:
+  /users:
+    get:
+      summary: List users
+      operationId: listUsers
+      description: Obtiene la lista de usuarios del sistema
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              example:
+                - id: "1"
+                  firstName: "John"
+                  last_name: "Doe"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        firstName:
+          type: string
+          description: User's first name (camelCase)
+        last_name:
+          type: string
+          description: User's last name (snake_case)
+        email_address:
+          type: string
+          format: email
+          description: User's email (snake_case)
+        phoneNumber:
+          type: string
+          description: User's phone (camelCase)
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp (snake_case)
+        updatedAt:
+          type: string
+          format: date-time
+          description: Update timestamp (camelCase)
+        is_active:
+          type: boolean
+          description: Active status (snake_case)
+        userType:
+          type: string
+          description: User type (camelCase)
+        profile_image:
+          type: string
+          description: Profile image URL (snake_case)
+        displayName:
+          type: string
+          description: Display name (camelCase)
+      required:
+        - id
+        - firstName
+        - last_name
+
+    Address:
+      type: object
+      properties:
+        street_name:
+          type: string
+          description: Street name (snake_case)
+        houseNumber:
+          type: integer
+          description: House number (camelCase)
+        zip_code:
+          type: string
+          description: ZIP code (snake_case)
+        cityName:
+          type: string
+          description: City name (camelCase)
+        country_code:
+          type: string
+          description: Country code (snake_case)
+      required:
+        - street_name
+        - cityName
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

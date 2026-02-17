@@ -1,0 +1,62 @@
+name: 'AuditAPI'
+description: 'Audit OpenAPI specifications with quality scoring and security checks'
+author: 'AuditAPI Team'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  file:
+    description: 'Path to the OpenAPI specification file (YAML or JSON)'
+    required: true
+    default: 'openapi.yaml'
+  
+  fail-on:
+    description: 'Minimum passing grade (A, B, C, D, or F). Pipeline fails if grade is below this.'
+    required: false
+    default: 'D'
+  
+  verbose:
+    description: 'Show all violations including warnings (true/false)'
+    required: false
+    default: 'false'
+  
+  config:
+    description: 'Path to custom configuration directory (optional)'
+    required: false
+    default: './config'
+  
+  output:
+    description: 'Output file path to save the audit report (optional)'
+    required: false
+    default: ''
+
+outputs:
+  score:
+    description: 'Final audit score (0-100)'
+  
+  grade:
+    description: 'Letter grade (A, B, C, D, or F)'
+  
+  passed:
+    description: 'Whether the audit passed (true/false)'
+  
+  violations:
+    description: 'Total number of violations found'
+  
+  errors:
+    description: 'Number of errors'
+  
+  warnings:
+    description: 'Number of warnings'
+  
+  report:
+    description: 'Full audit report in JSON format'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
+# Environment variables for the action
+env:
+  NODE_ENV: production

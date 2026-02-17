@@ -1,0 +1,47 @@
+{
+  "name": "auditapi",
+  "version": "1.0.0",
+  "description": "CLI tool for auditing OpenAPI specifications with quality scoring",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "auditapi": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli/index.js",
+    "dev": "ts-node src/cli/index.ts",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "openapi",
+    "spectral",
+    "api",
+    "audit",
+    "cli",
+    "linting"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "@stoplight/spectral-core": "^1.18.3",
+    "@stoplight/spectral-functions": "^1.10.1",
+    "@stoplight/spectral-ruleset-bundler": "^1.6.0",
+    "@stoplight/spectral-ruleset-migrator": "^1.11.3",
+    "@stoplight/spectral-rulesets": "^1.22.0",
+    "commander": "^12.0.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

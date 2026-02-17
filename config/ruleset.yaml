@@ -1,0 +1,467 @@
+rules:
+  # ============================================================================
+  # SEGURIDAD (SEC)
+  # ============================================================================
+  
+  sec-auth-defined:
+    description: "SEC-01: Security schemes must be defined in components"
+    message: "SEC-01: Missing securitySchemes definition. OWASP API Security requires authentication to be explicitly defined."
+    given: "$.components"
+    then:
+      field: securitySchemes
+      function: truthy
+    severity: error
+    tags:
+      - security
+      - owasp
+
+  sec-auth-not-empty:
+    description: "SEC-01: Security schemes must have a type defined"
+    message: "SEC-01: Security scheme is missing 'type' field. Define http, apiKey, oauth2, or openIdConnect."
+    given: "$.components.securitySchemes.*"
+    then:
+      field: type
+      function: truthy
+    severity: error
+    tags:
+      - security
+      - owasp
+
+  sec-security-global:
+    description: "SEC-01: Security must be defined globally"
+    message: "SEC-01: Missing global security definition. Define security at root level or per operation."
+    given: "$"
+    then:
+      field: security
+      function: truthy
+    severity: error
+    tags:
+      - security
+      - owasp
+
+  sec-no-api-key-in-query:
+    description: "SEC-02: API keys should not be in query parameters"
+    message: "SEC-02: Potential API key or secret in query parameter. Use header or cookie instead."
+    given: "$.paths..parameters[*]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          properties:
+            in:
+              not:
+                const: query
+            name:
+              not:
+                pattern: "^(api[_-]?key|token|secret|password|auth)$"
+          required: ["in", "name"]
+    severity: error
+    tags:
+      - security
+      - owasp
+
+  sec-no-http:
+    description: "SEC-03: HTTPS must be enforced - no HTTP allowed"
+    message: "SEC-03: Server URL must use HTTPS. HTTP is insecure and not allowed."
+    given: "$.servers[*].url"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^https://"
+    severity: error
+    tags:
+      - security
+      - ssl
+
+  sec-no-additional-properties:
+    description: "SEC-04: Schemas should not allow additionalProperties: true"
+    message: "SEC-04: additionalProperties: true allows Mass Assignment. Set to false or define explicit properties."
+    given: "$.components.schemas..additionalProperties"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          not:
+            const: true
+    severity: warn
+    tags:
+      - security
+      - owasp
+
+  sec-oauth2-scopes:
+    description: "SEC-05: OAuth2 flows must define scopes"
+    message: "SEC-05: OAuth2 flow missing scopes. Define required scopes for authorization."
+    given: "$.components.securitySchemes.*.flows.*"
+    then:
+      field: scopes
+      function: truthy
+    severity: warn
+    tags:
+      - security
+      - oauth2
+
+  # ============================================================================
+  # COMPLETITUD (COM)
+  # ============================================================================
+
+  com-operation-summary:
+    description: "COM-01: Operations must have a summary"
+    message: "COM-01: Operation missing summary. Each endpoint must have a short summary."
+    given: "$.paths.*.get.summary"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-summary-post:
+    description: "COM-01: POST operations must have a summary"
+    message: "COM-01: POST operation missing summary. Each endpoint must have a short summary."
+    given: "$.paths.*.post.summary"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-summary-put:
+    description: "COM-01: PUT operations must have a summary"
+    message: "COM-01: PUT operation missing summary. Each endpoint must have a short summary."
+    given: "$.paths.*.put.summary"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-summary-delete:
+    description: "COM-01: DELETE operations must have a summary"
+    message: "COM-01: DELETE operation missing summary. Each endpoint must have a short summary."
+    given: "$.paths.*.delete.summary"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-description:
+    description: "COM-01: Operations should have a description"
+    message: "COM-01: Operation missing detailed description. Each endpoint should have a comprehensive description."
+    given: "$.paths.*.get.description"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-description-post:
+    description: "COM-01: POST operations should have a description"
+    message: "COM-01: POST operation missing detailed description. Each endpoint should have a comprehensive description."
+    given: "$.paths.*.post.description"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-description-put:
+    description: "COM-01: PUT operations should have a description"
+    message: "COM-01: PUT operation missing detailed description. Each endpoint should have a comprehensive description."
+    given: "$.paths.*.put.description"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-operation-description-delete:
+    description: "COM-01: DELETE operations should have a description"
+    message: "COM-01: DELETE operation missing detailed description. Each endpoint should have a comprehensive description."
+    given: "$.paths.*.delete.description"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - documentation
+
+  com-response-example:
+    description: "COM-02: Responses should have examples or example"
+    message: "COM-02: Response missing example data. Each response should include example or examples field."
+    given: "$.paths..responses.*.content.*"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          anyOf:
+            - required: ["example"]
+            - required: ["examples"]
+    severity: warn
+    tags:
+      - completeness
+      - examples
+
+  com-error-response-400:
+    description: "COM-03: Must define 400 error response"
+    message: "COM-03: Missing 400 Bad Request response. Define error handling for invalid requests."
+    given: "$.paths.*.*.responses"
+    then:
+      field: "400"
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - errors
+
+  com-error-response-401:
+    description: "COM-03: Must define 401 error response"
+    message: "COM-03: Missing 401 Unauthorized response. Define error handling for authentication failures."
+    given: "$.paths.*.*.responses"
+    then:
+      field: "401"
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - errors
+
+  com-error-response-403:
+    description: "COM-03: Must define 403 error response"
+    message: "COM-03: Missing 403 Forbidden response. Define error handling for authorization failures."
+    given: "$.paths.*.*.responses"
+    then:
+      field: "403"
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - errors
+
+  com-error-response-500:
+    description: "COM-03: Must define 500 error response"
+    message: "COM-03: Missing 500 Internal Server Error response. Define error handling for server errors."
+    given: "$.paths.*.*.responses"
+    then:
+      field: "500"
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - errors
+
+  com-info-contact:
+    description: "COM-04: API must have contact information"
+    message: "COM-04: Missing contact metadata. info.contact must be defined with email or url."
+    given: "$.info"
+    then:
+      field: contact
+      function: truthy
+    severity: info
+    tags:
+      - completeness
+      - metadata
+
+  com-info-license:
+    description: "COM-04: API should have license information"
+    message: "COM-04: Missing license metadata. info.license should be defined."
+    given: "$.info"
+    then:
+      field: license
+      function: truthy
+    severity: info
+    tags:
+      - completeness
+      - metadata
+
+  com-parameter-description:
+    description: "COM-05: All parameters should have descriptions"
+    message: "COM-05: Parameter missing description. Each parameter should be documented."
+    given: "$.paths..parameters[*]"
+    then:
+      field: description
+      function: truthy
+    severity: warn
+    tags:
+      - completeness
+      - parameters
+
+  # ============================================================================
+  # ESTRUCTURA (STR)
+  # ============================================================================
+
+  str-no-inline-schemas:
+    description: "STR-01: Complex request schemas should use $ref"
+    message: "STR-01: Complex inline schema detected. Use components/schemas with $ref for reusability."
+    given: "$.paths..requestBody.content.*.schema.properties"
+    then:
+      function: falsy
+    severity: info
+    tags:
+      - structure
+      - dry
+
+  str-operation-tags:
+    description: "STR-02: Operations must have tags for grouping"
+    message: "STR-02: Operation missing tags. All endpoints must have at least one tag for logical grouping."
+    given: "$.paths.*.get.tags"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - organization
+
+  str-operation-tags-post:
+    description: "STR-02: POST operations must have tags"
+    message: "STR-02: POST operation missing tags. All endpoints must have at least one tag for logical grouping."
+    given: "$.paths.*.post.tags"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - organization
+
+  str-operation-tags-put:
+    description: "STR-02: PUT operations must have tags"
+    message: "STR-02: PUT operation missing tags. All endpoints must have at least one tag for logical grouping."
+    given: "$.paths.*.put.tags"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - organization
+
+  str-operation-tags-delete:
+    description: "STR-02: DELETE operations must have tags"
+    message: "STR-02: DELETE operation missing tags. All endpoints must have at least one tag for logical grouping."
+    given: "$.paths.*.delete.tags"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - organization
+
+  str-semver-version:
+    description: "STR-03: Version should follow Semantic Versioning"
+    message: "STR-03: Version does not follow Semantic Versioning (X.Y.Z format recommended)."
+    given: "$.info.version"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^\\d+\\.\\d+\\.\\d+"
+    severity: info
+    tags:
+      - structure
+      - semver
+
+  str-operation-id:
+    description: "STR-04: Operations must have operationId"
+    message: "STR-04: Operation missing operationId. Each endpoint must have a unique descriptive identifier."
+    given: "$.paths.*.get.operationId"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - codegen
+
+  str-operation-id-post:
+    description: "STR-04: POST operations must have operationId"
+    message: "STR-04: POST operation missing operationId. Each endpoint must have a unique descriptive identifier."
+    given: "$.paths.*.post.operationId"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - codegen
+
+  str-operation-id-put:
+    description: "STR-04: PUT operations must have operationId"
+    message: "STR-04: PUT operation missing operationId. Each endpoint must have a unique descriptive identifier."
+    given: "$.paths.*.put.operationId"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - codegen
+
+  str-operation-id-delete:
+    description: "STR-04: DELETE operations must have operationId"
+    message: "STR-04: DELETE operation missing operationId. Each endpoint must have a unique descriptive identifier."
+    given: "$.paths.*.delete.operationId"
+    then:
+      function: truthy
+    severity: warn
+    tags:
+      - structure
+      - codegen
+
+  # ============================================================================
+  # CONSISTENCIA (CNS)
+  # ============================================================================
+
+  cns-property-camelcase:
+    description: "CNS-01: Schema properties should use camelCase"
+    message: "CNS-01: Schema property uses inconsistent casing. Consider using camelCase consistently."
+    given: "$.components.schemas.*.properties"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          propertyNames:
+            pattern: "^[a-z][a-zA-Z0-9]*$"
+    severity: warn
+    tags:
+      - consistency
+      - naming
+
+  cns-path-lowercase:
+    description: "CNS-02: Paths should use lowercase and hyphens"
+    message: "CNS-02: Path should use kebab-case (lowercase with hyphens)."
+    given: "$.paths"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          propertyNames:
+            pattern: "^/[a-z0-9]+(-[a-z0-9]+)*(/[a-z0-9]+(-[a-z0-9]+)*)*$"
+    severity: warn
+    tags:
+      - consistency
+      - naming
+
+  cns-date-properties-format:
+    description: "CNS-04: Date properties should have format defined"
+    message: "CNS-04: Date-like property should have format defined (date-time or date)."
+    given: "$.components.schemas..properties[?(@.type=='string' && (@property=='createdAt' || @property=='updatedAt' || @property=='timestamp' || @property=='date' || @property=='created_at' || @property=='updated_at'))]"
+    then:
+      field: format
+      function: truthy
+    severity: warn
+    tags:
+      - consistency
+      - format
+
+  cns-mixed-styles:
+    description: "CNS-01: Detect mixed camelCase and snake_case in schema properties"
+    message: "CNS-01: Mixed property casing detected"
+    given: "$.components.schemas"
+    then:
+      function: consistentCasing
+    severity: error
+    tags:
+      - consistency
+      - naming

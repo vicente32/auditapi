@@ -1,0 +1,152 @@
+base_score: 100
+
+weights:
+  security: 0.35
+  completeness: 0.25
+  structure: 0.25
+  consistency: 0.15
+
+penalties:
+  # ============================================================================
+  # SEGURIDAD (SEC)
+  # ============================================================================
+  sec-auth-defined:
+    points: 100
+    fatal: true
+  sec-auth-not-empty:
+    points: 100
+    fatal: true
+  sec-security-global:
+    points: 100
+    fatal: true
+  sec-no-api-key-in-query:
+    points: 20
+    fatal: false
+  sec-no-http:
+    points: 15
+    fatal: false
+  sec-no-additional-properties:
+    points: 10
+    fatal: false
+  sec-oauth2-scopes:
+    points: 5
+    fatal: false
+
+  # ============================================================================
+  # COMPLETITUD (COM)
+  # ============================================================================
+  com-operation-summary:
+    points: 5
+    fatal: false
+  com-operation-summary-post:
+    points: 5
+    fatal: false
+  com-operation-summary-put:
+    points: 5
+    fatal: false
+  com-operation-summary-delete:
+    points: 5
+    fatal: false
+  com-operation-description:
+    points: 5
+    fatal: false
+  com-operation-description-post:
+    points: 5
+    fatal: false
+  com-operation-description-put:
+    points: 5
+    fatal: false
+  com-operation-description-delete:
+    points: 5
+    fatal: false
+  com-response-example:
+    points: 10
+    fatal: false
+  com-error-response-400:
+    points: 5
+    fatal: false
+  com-error-response-401:
+    points: 5
+    fatal: false
+  com-error-response-403:
+    points: 5
+    fatal: false
+  com-error-response-500:
+    points: 5
+    fatal: false
+  com-info-contact:
+    points: 5
+    fatal: false
+  com-info-license:
+    points: 5
+    fatal: false
+  com-parameter-description:
+    points: 2
+    fatal: false
+
+  # ============================================================================
+  # ESTRUCTURA (STR)
+  # ============================================================================
+  str-no-inline-schemas:
+    points: 10
+    fatal: false
+  str-operation-tags:
+    points: 5
+    fatal: false
+  str-operation-tags-post:
+    points: 5
+    fatal: false
+  str-operation-tags-put:
+    points: 5
+    fatal: false
+  str-operation-tags-delete:
+    points: 5
+    fatal: false
+  str-semver-version:
+    points: 2
+    fatal: false
+  str-operation-id:
+    points: 10
+    fatal: false
+  str-operation-id-post:
+    points: 10
+    fatal: false
+  str-operation-id-put:
+    points: 10
+    fatal: false
+  str-operation-id-delete:
+    points: 10
+    fatal: false
+
+  # ============================================================================
+  # CONSISTENCIA (CNS)
+  # ============================================================================
+  cns-property-camelcase:
+    points: 10
+    fatal: false
+  cns-path-lowercase:
+    points: 5
+    fatal: false
+  cns-date-properties-format:
+    points: 5
+    fatal: false
+  cns-mixed-styles:
+    points: 15
+    fatal: false
+
+grading_scale:
+  A:
+    min: 90
+    max: 100
+  B:
+    min: 80
+    max: 89
+  C:
+    min: 70
+    max: 79
+  D:
+    min: 60
+    max: 69
+  F:
+    min: 0
+    max: 59

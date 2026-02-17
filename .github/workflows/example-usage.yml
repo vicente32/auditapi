@@ -1,0 +1,112 @@
+# Ejemplo de Workflow para GitHub Actions
+
+Pon este archivo en `.github/workflows/audit-api.yml` de tu repositorio:
+
+```yaml
+name: Audit OpenAPI Specification
+
+on:
+  push:
+    paths:
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+  pull_request:
+    paths:
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+  workflow_dispatch:  # Permite ejecución manual
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    name: Audit API Specification
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run AuditAPI
+        uses: ./  # Usa la action del repositorio local
+        # O usa: uses: tu-usuario/auditapi@v1
+        with:
+          file: 'openapi.yaml'
+          fail-on: 'B'  # Falla si el grado es menor a B
+          verbose: 'false'  # Cambia a 'true' para ver todas las violaciones
+      
+      # Opcional: Usar los outputs en pasos posteriores
+      - name: Check Audit Results
+        if: always()
+        run: |
+          echo "Score: ${{ steps.audit.outputs.score }}"
+          echo "Grade: ${{ steps.audit.outputs.grade }}"
+          echo "Passed: ${{ steps.audit.outputs.passed }}"
+          echo "Violations: ${{ steps.audit.outputs.violations }}"
+      
+      # Opcional: Subir el reporte como artifact
+      - name: Upload Audit Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: audit-report.json
+```
+
+## Configuraciones Comunes
+
+### Modo Estricto (Calidad Alta)
+```yaml
+with:
+  file: 'openapi.yaml'
+  fail-on: 'A'  # Solo permite grado A
+  verbose: 'true'
+```
+
+### Modo Permisivo (Desarrollo)
+```yaml
+with:
+  file: 'openapi.yaml'
+  fail-on: 'D'  # Permite hasta grado D
+  verbose: 'false'
+```
+
+### Auditoría Múltiples Archivos
+```yaml
+strategy:
+  matrix:
+    api-file: ['api-v1.yaml', 'api-v2.yaml', 'internal-api.yaml']
+
+steps:
+  - uses: ./
+    with:
+      file: ${{ matrix.api-file }}
+      fail-on: 'B'
+```
+
+### Guardar Reporte en PR
+```yaml
+- name: Comment PR
+  if: github.event_name == 'pull_request'
+  uses: actions/github-script@v7
+  with:
+    script: |
+      const report = JSON.parse('${{ steps.audit.outputs.report }}');
+      const body = `## 🔍 API Audit Results
+      
+      **Grade:** ${report.grade}  
+      **Score:** ${report.finalScore}/100  
+      **Status:** ${report.passed ? '✅ PASSED' : '❌ FAILED'}
+      
+      **Violations:** ${report.summary.totalViolations}  
+      - ❌ Errors: ${report.summary.errorCount}
+      - ⚠️ Warnings: ${report.summary.warningCount}
+      `;
+      
+      github.rest.issues.createComment({
+        issue_number: context.issue.number,
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        body: body
+      });
+```
