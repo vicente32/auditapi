@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * CLI Entry Point - AuditAPI
  * Command-line interface using Commander.js
@@ -44,32 +45,32 @@ function filterViolations(violations: Violation[], showAll: boolean): Violation[
  */
 function formatHumanOutput(result: AuditResult, verbose: boolean): string {
   const gradeColor = result.grade === 'A' ? '\x1b[32m' :  // Green
-                     result.grade === 'B' ? '\x1b[34m' :  // Blue
-                     result.grade === 'C' ? '\x1b[33m' :  // Yellow
-                     result.grade === 'D' ? '\x1b[35m' :  // Magenta
-                     '\x1b[31m';                          // Red
+    result.grade === 'B' ? '\x1b[34m' :  // Blue
+      result.grade === 'C' ? '\x1b[33m' :  // Yellow
+        result.grade === 'D' ? '\x1b[35m' :  // Magenta
+          '\x1b[31m';                          // Red
   const reset = '\x1b[0m';
-  
+
   let output = '\n';
   output += '╔══════════════════════════════════════════════════════════╗\n';
   output += `║           ${gradeColor}AUDITAPI REPORT${reset}                        ║\n`;
   output += '╚══════════════════════════════════════════════════════════╝\n\n';
-  
+
   output += `📄 File:     ${result.filePath}\n`;
   output += `⏱️  Duration: ${result.duration}ms\n`;
   output += `📅 Time:     ${result.timestamp}\n\n`;
-  
+
   output += `${gradeColor}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}\n`;
   output += `${gradeColor}                    FINAL GRADE: ${result.grade}${reset}\n`;
   output += `${gradeColor}                    SCORE: ${result.finalScore}/100${reset}\n`;
   output += `${gradeColor}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}\n\n`;
-  
+
   output += 'Category Breakdown:\n';
   for (const cat of result.categoryBreakdown) {
     const status = cat.pointsDeducted === 0 ? '✅' : '⚠️ ';
     output += `  ${status} ${cat.category.padEnd(15)} Weight: ${cat.weight.toFixed(2)}  Penalty: ${cat.pointsDeducted}\n`;
   }
-  
+
   output += '\n📊 Summary:\n';
   output += `   Total Violations: ${result.summary.totalViolations}\n`;
   output += `   ❌ Errors:         ${result.summary.errorCount}\n`;
@@ -91,18 +92,18 @@ function formatHumanOutput(result: AuditResult, verbose: boolean): string {
   }
 
   output += `\n${result.passed ? '\x1b[32m✅ PASSED\x1b[0m' : '\x1b[31m❌ FAILED\x1b[0m'}\n`;
-  
+
   // Filter violations based on verbose mode
   const filteredViolations = filterViolations(result.violations, verbose);
   const hiddenViolations = result.violations.length - filteredViolations.length;
-  
+
   if (filteredViolations.length > 0) {
     output += '\n\nDetailed Violations:\n';
     output += '──────────────────────────────────────────────────────────\n';
-    
+
     for (const v of filteredViolations) {
       const severityIcon = v.severity === 'error' ? '❌' :
-                           v.severity === 'warn' ? '⚠️ ' : 'ℹ️ ';
+        v.severity === 'warn' ? '⚠️ ' : 'ℹ️ ';
       output += `\n${severityIcon} [${v.ruleId}] ${v.severity.toUpperCase()}\n`;
       output += `   ${v.message}\n`;
       output += `   Path: ${v.path}\n`;
@@ -111,13 +112,13 @@ function formatHumanOutput(result: AuditResult, verbose: boolean): string {
       }
     }
   }
-  
+
   // Show message about hidden violations in non-verbose mode
   if (!verbose && hiddenViolations > 0) {
     const violationWord = hiddenViolations === 1 ? 'violation' : 'violations';
     output += `\n\n📌 Run with --verbose to see ${hiddenViolations} more ${violationWord}...\n`;
   }
-  
+
   return output;
 }
 
@@ -146,14 +147,14 @@ program
         console.error(`❌ Error: File not found: ${file}`);
         process.exit(1);
       }
-      
+
       // Validate config directory exists
       const configPath = path.resolve(options.config);
       if (!fs.existsSync(configPath)) {
         console.error(`❌ Error: Config directory not found: ${options.config}`);
         process.exit(1);
       }
-      
+
       // Validate fail-on grade
       const validGrades = ['A', 'B', 'C', 'D', 'F'];
       const failOnGrade = options.failOn.toUpperCase();
@@ -161,10 +162,10 @@ program
         console.error(`❌ Error: Invalid grade '${options.failOn}'. Must be one of: A, B, C, D, F`);
         process.exit(1);
       }
-      
+
       // Load configuration
       const configLoader = createConfigLoader(configPath);
-      
+
       try {
         configLoader.loadAll();
       } catch (error) {
@@ -172,16 +173,16 @@ program
         console.error(`❌ Error loading configuration: ${message}`);
         process.exit(1);
       }
-      
+
       // Run audit
       const auditor = new Auditor(configLoader);
       const result = await auditor.audit(resolvedPath);
-      
+
       // Format output
-      const output = options.json 
-        ? JSON.stringify(result, null, 2) 
+      const output = options.json
+        ? JSON.stringify(result, null, 2)
         : formatHumanOutput(result, options.verbose);
-      
+
       // Write or print output
       if (options.output) {
         fs.writeFileSync(options.output, output);
@@ -189,13 +190,13 @@ program
       } else {
         console.log(output);
       }
-      
+
       // Exit with error code based on fail-on grade
       const passed = meetsMinimumGrade(result.grade, failOnGrade);
       if (!passed) {
         process.exit(1);
       }
-      
+
     } catch (error) {
       if (error instanceof Error) {
         console.error(`❌ Audit failed: ${error.message}`);
@@ -216,28 +217,28 @@ program
   .action((options) => {
     try {
       const configPath = path.resolve(options.config);
-      
+
       if (!fs.existsSync(configPath)) {
         console.error(`❌ Error: Config directory not found: ${options.config}`);
         process.exit(1);
       }
-      
+
       const configLoader = createConfigLoader(configPath);
       configLoader.loadAll();
-      
+
       console.log('✅ Configuration files are valid');
-      
+
       const { scoring, ruleset } = configLoader.loadAll();
-      
+
       console.log(`\n📊 Scoring Configuration:`);
       console.log(`   Base Score: ${scoring.base_score}`);
       console.log(`   Categories: ${Object.keys(scoring.weights).join(', ')}`);
       console.log(`   Penalties: ${Object.keys(scoring.penalties).length} rules defined`);
-      
+
       console.log(`\n📋 Ruleset Configuration:`);
       console.log(`   Extends: ${ruleset.extends?.join(', ') ?? 'none (using default OAS rules)'}`);
       console.log(`   Custom Rules: ${Object.keys(ruleset.rules).length} rules defined`);
-      
+
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error(`❌ Configuration validation failed: ${message}`);
