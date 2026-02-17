@@ -4,6 +4,10 @@
   "description": "CLI tool for auditing OpenAPI specifications with quality scoring",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "config"
+  ],
   "bin": {
     "auditapi": "./dist/cli/index.js"
   },

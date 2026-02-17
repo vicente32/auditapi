@@ -15,7 +15,9 @@ import {
   ValidationResult
 } from '../types/config';
 
-const DEFAULT_CONFIG_DIR = './config';
+declare const __dirname: string;
+
+const DEFAULT_CONFIG_DIR = path.resolve(__dirname, '../config');
 
 // Map of Spectral function names to actual functions
 const SPECTRAL_FUNCTION_MAP: Record<string, any> = {
