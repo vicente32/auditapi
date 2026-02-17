@@ -1,6 +1,6 @@
 {
   "name": "auditapi",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CLI tool for auditing OpenAPI specifications with quality scoring",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
