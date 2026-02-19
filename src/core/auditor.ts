@@ -29,6 +29,7 @@ function getRuleCategory(ruleId: string, tags?: string[]): string {
     if (tags.includes('completeness')) return 'completeness';
     if (tags.includes('structure')) return 'structure';
     if (tags.includes('consistency')) return 'consistency';
+    if (tags.includes('architecture')) return 'architecture';
   }
   
   // Infer from rule ID prefix
@@ -36,6 +37,7 @@ function getRuleCategory(ruleId: string, tags?: string[]): string {
   if (ruleId.startsWith('com-')) return 'completeness';
   if (ruleId.startsWith('str-')) return 'structure';
   if (ruleId.startsWith('cns-')) return 'consistency';
+  if (ruleId.startsWith('arch-')) return 'architecture';
   
   return 'completeness'; // default
 }
@@ -64,7 +66,7 @@ function calculateCategoryScores(
   scoringConfig: ScoringConfig,
   ruleset: SpectralRuleset
 ): CategoryScore[] {
-  const categories = ['security', 'completeness', 'structure', 'consistency'] as const;
+  const categories = ['security', 'completeness', 'structure', 'consistency', 'architecture'] as const;
   
   return categories.map(category => {
     const categoryViolations = violations.filter(v => 

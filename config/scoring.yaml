@@ -1,10 +1,11 @@
 base_score: 100
 
 weights:
-  security: 0.35
-  completeness: 0.25
-  structure: 0.25
-  consistency: 0.15
+  security: 0.30
+  completeness: 0.20
+  structure: 0.15
+  consistency: 0.10
+  architecture: 0.25
 
 penalties:
   # ============================================================================
@@ -132,6 +133,19 @@ penalties:
     fatal: false
   cns-mixed-styles:
     points: 15
+    fatal: false
+
+  # ============================================================================
+  # ARQUITECTURA (ARCH)
+  # ============================================================================
+  arch-no-inline-response-schema:
+    points: 20
+    fatal: false
+  arch-no-inline-parameter-schema:
+    points: 20
+    fatal: false
+  arch-no-inline-requestbody-schema:
+    points: 20
     fatal: false
 
 grading_scale:

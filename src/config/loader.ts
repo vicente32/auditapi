@@ -89,7 +89,7 @@ function validateWeights(weights: ScoringConfig['weights']): string[] {
     errors.push(`Category weights must sum to 1.0, got ${sum}`);
   }
   
-  const requiredCategories = ['security', 'completeness', 'structure', 'consistency'];
+  const requiredCategories = ['security', 'completeness', 'structure', 'consistency', 'architecture'];
   for (const category of requiredCategories) {
     if (!(category in weights)) {
       errors.push(`Missing required weight category: ${category}`);

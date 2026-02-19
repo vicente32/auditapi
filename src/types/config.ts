@@ -29,6 +29,8 @@ export interface CategoryWeights {
   structure: number;
   /** Consistency rules weight (default: 0.15) */
   consistency: number;
+  /** Architecture rules weight (component referencing) */
+  architecture: number;
 }
 
 /**
