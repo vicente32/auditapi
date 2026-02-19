@@ -465,3 +465,34 @@ rules:
     tags:
       - consistency
       - naming
+
+  # ============================================================================
+  # ARQUITECTURA (ARCH) - Component Referencing
+  # ============================================================================
+
+  arch-no-inline-response-schema:
+    description: "Inline definitions are strictly prohibited. Move this structure to #/components and reference it."
+    given: "$.paths[*][*].responses[*].content[*].schema"
+    resolved: false
+    severity: error
+    then:
+      field: "$ref"
+      function: truthy
+
+  arch-no-inline-parameter-schema:
+    description: "Inline parameter definitions are strictly prohibited. Use a $ref to #/components/parameters."
+    given: "$.paths[*][*].parameters[*]"
+    resolved: false
+    severity: error
+    then:
+      field: "$ref"
+      function: truthy
+
+  arch-no-inline-requestbody-schema:
+    description: "Inline requestBody definitions are strictly prohibited. Move this structure to #/components and reference it."
+    given: "$.paths[*][*].requestBody.content[*].schema"
+    resolved: false
+    severity: error
+    then:
+      field: "$ref"
+      function: truthy
